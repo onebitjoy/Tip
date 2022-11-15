@@ -125,6 +125,7 @@ internal fun tipCalc(amount: Double, tipvalue: Double = 15.0): Double {
     return (tipvalue * amount) / 100
 }
 
+//Committed
 
 
 
