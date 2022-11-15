@@ -5,12 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -53,6 +56,8 @@ fun MainScreen() {
     val tipvalue = tipInput.toDoubleOrNull() ?: 15.0 // Default Tip Percentage = 15%
 
     val tip: Double = tipCalc(amount, tipvalue)
+    val focusManager = LocalFocusManager.current
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color(0xFFABC3E7))
@@ -72,10 +77,14 @@ fun MainScreen() {
             Spacer(modifier = Modifier.height(50.dp))
 
 
-            NumberField(amountInput, onValueChanged = { amountInput = it }, ImeAction.Next, "Amount")
+            NumberField(amountInput, onValueChanged = { amountInput = it }, ImeAction.Next, "Amount",KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ))
             Spacer(modifier = Modifier.height(15.dp))
 
-            NumberField(tipInput, onValueChanged = { tipInput = it }, ImeAction.Done, "Tip Percentage")
+            NumberField(tipInput, onValueChanged = { tipInput = it }, ImeAction.Done, "Tip Percentage",KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            ))
             Spacer(modifier = Modifier.height(70.dp))
 
             Text(text = stringResource(id = R.string.show, tip), fontSize = 36.sp)
@@ -90,7 +99,8 @@ fun NumberField(
     amountInput: String,
     onValueChanged: (String) -> Unit,
     imicon: ImeAction = ImeAction.Next,
-    label:String
+    label:String,
+    keyboardActions: KeyboardActions
 ) {
     Card(
         elevation = 5.dp,
@@ -105,6 +115,7 @@ fun NumberField(
                 .fillMaxWidth()
                 .height(100.dp),
             textStyle = MaterialTheme.typography.h3,
+            keyboardActions = keyboardActions,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = imicon
